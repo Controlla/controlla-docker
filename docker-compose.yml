@@ -1,0 +1,76 @@
+version: '3.7'
+
+networks:
+  elastic:
+    driver: bridge
+
+volumes:
+  elasticsearch:
+    driver: local
+
+services:
+
+### ElasticSearch ########################################
+  elasticsearch:
+    build:
+      context: ./elasticsearch
+      args:
+        - ELK_VERSION=${ELK_VERSION}
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    container_name: elasticsearch
+    environment:
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - discovery.type=single-node
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - 'elasticsearch:/usr/share/elasticsearch/data'
+
+### Logstash ##############################################
+  logstash:
+    build:
+      context: ./logstash
+      args:
+        - ELK_VERSION=${ELK_VERSION}
+    container_name: logstash
+    environment:
+      - "ELASTIC_PASSWORD=elastic"
+    ports: ['9600:9600']
+    depends_on: ['elasticsearch']
+    volumes:
+      - type: bind
+        source: ./logstash_pipeline/
+        target: /usr/share/logstash/pipeline
+        read_only: true
+
+### Filebeat ##############################################
+  filebeat:
+    build:
+      context: ./filebeat
+      args:
+        - ELK_VERSION=${ELK_VERSION}
+    container_name: filebeat
+    environment:
+      - "ELASTIC_PASSWORD=elastic"
+    user: root
+    volumes:
+      - './var/filebeat/log/:/var/log/:ro'
+      - './var/filebeat/docker.sock:/var/run/docker.sock'
+      - './var/logs/:/var/lib/docker/containers/logs:ro'
+      - './etc/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml'
+    command: ["--strict.perms=false"]
+
+### Kibana ##############################################
+  kibana:
+    build:
+      context: ./kibana
+      args:
+        - ELK_VERSION=${ELK_VERSION}
+    container_name: kibana
+    ports: ['5601:5601']
+    depends_on:
+      - elasticsearch
