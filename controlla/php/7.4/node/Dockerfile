@@ -1,4 +1,4 @@
-FROM controlla/php:7.4
+FROM controlla/controlla:php-7.4
 
 LABEL maintainer="Ivan Sotelo <isotelo@controlla.com.mx>"
 
