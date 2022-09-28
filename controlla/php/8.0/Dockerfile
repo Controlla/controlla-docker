@@ -1,3 +1,5 @@
+
+
 #
 #--------------------------------------------------------------------------
 # Image Setup
@@ -18,7 +20,7 @@ ENV LANG=en_US.UTF-8
 ENV TERM xterm
 
 RUN set -eux \
-    # Add the "PHP 7" ppa
+    # Add the "PHP 8" ppa
     && apt-get install -y software-properties-common \
     && add-apt-repository -y ppa:ondrej/php \
     #
@@ -36,7 +38,6 @@ RUN set -eux \
         php8.0-common \
         php8.0-curl \
         php8.0-intl \
-        php8.0-json \
         php8.0-xml \
         php8.0-mbstring \
         php8.0-mysql \
@@ -64,6 +65,7 @@ RUN set -eux \
         tree \
         postgresql-client \
     && apt-get clean \
+    && update-alternatives --set php /usr/bin/php8.0 \
     #####################################
     # Composer:
     #####################################
