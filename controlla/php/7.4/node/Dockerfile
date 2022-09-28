@@ -14,5 +14,5 @@ RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -\
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*\
   && npm install -g yarn@1\
-  npm install -g @vue/cli \
+  && npm install -g @vue/cli \
   && npm install -g @controlla/cli
