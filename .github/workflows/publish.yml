@@ -14,7 +14,7 @@ jobs:
           - path: controlla/php/7.4
             tags: "controlla/controlla:php-7.4"
           - path: controlla/php/7.4/node
-            tags: "controlla/php:7.4-node"
+            tags: "controlla/controlla:php-7.4-node"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
