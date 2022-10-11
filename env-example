@@ -1,0 +1,81 @@
+###########################################################
+###################### General Setup ######################
+###########################################################
+
+### Paths #################################################
+
+# Point to the path of your applications code on your host
+APP_CODE_PATH_HOST=../
+
+# Point to where the `APP_CODE_PATH_HOST` should be in the container
+APP_CODE_PATH_CONTAINER=/var/www
+
+# You may add flags to the path `:cached`, `:delegated`. When using Docker Sync add `:nocopy`
+APP_CODE_CONTAINER_FLAG=:cached
+
+# Choose storage path on your machine. For all storage systems
+DATA_PATH_HOST=~/.controlla/data
+
+### Docker Host IP ########################################
+
+# Enter your Docker Host IP (will be appended to /etc/hosts). Default is `10.0.75.1`
+DOCKER_HOST_IP=10.0.75.1
+
+### Remote Interpreter ####################################
+
+# Choose a Remote Interpreter entry matching name. Default is `controlla`
+PHP_IDE_CONFIG=serverName=controlla
+
+### Drivers ################################################
+
+# All volumes driver
+VOLUMES_DRIVER=local
+
+# All Networks driver
+NETWORKS_DRIVER=bridge
+
+### Controlla DEV Enviroment ###########################################
+CONTROLLA_DEV_ENVIROMENT=php-8.0-node
+
+### Install Oh My ZSH! ####################################
+
+# If you want to use "Oh My ZSH!" with Laravel autocomplete plugin, set SHELL_OH_MY_ZSH to true.
+
+SHELL_OH_MY_ZSH=true
+SHELL_OH_MY_ZSH_AUTOSUGESTIONS=true
+SHELL_OH_MY_ZSH_ALIASES=true
+
+###########################################################
+################ Containers Customization #################
+###########################################################
+
+### WORKSPACE #############################################
+
+WORKSPACE_INSTALL_WORKSPACE_SSH=false
+WORKSPACE_INSTALL_LIBPNG=false
+WORKSPACE_SSH_PORT=2222
+WORKSPACE_VUE_CLI_SERVE_HOST_PORT=8080
+WORKSPACE_VUE_CLI_UI_HOST_PORT=8001
+WORKSPACE_BROWSERSYNC_HOST_PORT=3000
+WORKSPACE_BROWSERSYNC_UI_HOST_PORT=3001
+
+### POSTGRES ##############################################
+
+POSTGRES_VERSION=alpine
+POSTGRES_DB=default
+POSTGRES_USER=default
+POSTGRES_PASSWORD=secret
+POSTGRES_PORT=5432
+POSTGRES_ENTRYPOINT_INITDB=./postgres/docker-entrypoint-initdb.d
+
+### pgadmin ##################################################
+# use this address http://ip6-localhost:5050
+PGADMIN_PORT=5050
+PGADMIN_DEFAULT_EMAIL=pgadmin4@pgadmin.org
+PGADMIN_DEFAULT_PASSWORD=admin
+
+### ELK Stack ##################################################
+ELK_VERSION=7.9.2
+
+### RUBY ##################################################
+RUBY_VERSION=2.5.3
