@@ -8,7 +8,7 @@ LABEL maintainer="Ivan Sotelo <isotelo@controlla.com.mx>"
 ENV NODE_VERSION 14.17.0
 RUN curl -L -o node.tar.xz "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.xz" && \
 	sudo tar -xJf node.tar.xz -C /usr/local --strip-components=1 && \
-	rm node.tar.xz nodeAliases.txt && \
+	rm node.tar.xz && \
 	sudo ln -s /usr/local/bin/node /usr/local/bin/nodejs
 
 ENV YARN_VERSION 1.22.18
