@@ -27,6 +27,8 @@ jobs:
             tags: "controlla/controlla:php-8.0-node"
           - path: controlla/php/8.1
             tags: "controlla/controlla:php-8.1"
+          - path: controlla/php/8.2
+            tags: "controlla/controlla:php-8.2"
           - path: controlla/php/8.1/node
             tags: "controlla/controlla:php-8.1-node"
           - path: controlla/ruby/2.5
