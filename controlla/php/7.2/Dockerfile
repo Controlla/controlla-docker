@@ -3,7 +3,7 @@
 # Image Setup
 #--------------------------------------------------------------------------
 #
-FROM php:7.4-fpm
+FROM php:7.2-fpm
 
 LABEL mainteners="Ivan Sotelo <isotelo@controlla.com.mx>,Gabriel Delgado <gdelgado@controlla.com.mx>"
 

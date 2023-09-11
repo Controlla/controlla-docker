@@ -1,4 +1,4 @@
-FROM controlla/controlla:php-7.4
+FROM controlla/controlla:php-7.2
 
 LABEL mainteners="Ivan Sotelo <isotelo@controlla.com.mx>,Gabriel Delgado <gdelgado@controlla.com.mx>"
 
