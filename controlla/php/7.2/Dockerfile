@@ -21,12 +21,9 @@ RUN apt-get update && apt-get install -y \
     libzip-dev \
     libexif-dev \
     && apt-get clean \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) gd zip exif pdo_mysql bcmath \
     && php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
     && php composer-setup.php --install-dir=/usr/local/bin --filename=composer \
     && php -r "unlink('composer-setup.php');" \
-
     #####################################
     # Composer:
     #####################################
