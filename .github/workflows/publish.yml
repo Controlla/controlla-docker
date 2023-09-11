@@ -19,8 +19,6 @@ jobs:
             tags: "controlla/circleci:php-8.1"
           - path: controlla/php/7.2
             tags: "controlla/controlla:php-7.2"
-          - path: controlla/php/7.2/node
-            tags: "controlla/controlla:php-7.2-node"
           - path: controlla/php/7.4
             tags: "controlla/controlla:php-7.4"
           - path: controlla/php/7.4/node
