@@ -3,67 +3,30 @@
 # Image Setup
 #--------------------------------------------------------------------------
 #
+FROM php:7.4-fpm
 
-FROM phusion/baseimage:focal-1.0.0
+LABEL mainteners="Ivan Sotelo <isotelo@controlla.com.mx>,Gabriel Delgado <gdelgado@controlla.com.mx>"
 
-LABEL maintainer="Ivan Sotelo <isotelo@controlla.com.mx>"
+# Create a non-root user
+RUN useradd -ms /bin/bash controlla
 
-ENV DEBIAN_FRONTEND=noninteractive
-RUN locale-gen en_US.UTF-8
-
-ENV LANGUAGE=en_US.UTF-8
-ENV LC_ALL=en_US.UTF-8
-ENV LC_CTYPE=en_US.UTF-8
-ENV LANG=en_US.UTF-8
-ENV TERM xterm
-
-RUN set -eux \
-    # Add the "PHP 7" ppa
-    && apt-get install -y software-properties-common \
-    && add-apt-repository -y ppa:ondrej/php \
-    #
-    #--------------------------------------------------------------------------
-    # Software's Installation
-    #--------------------------------------------------------------------------
-    #
-    && echo 'DPkg::options { "--force-confdef"; };' >> /etc/apt/apt.conf \
-    # Install "PHP Extentions", "libraries", "Software's"
-    && apt-get update \
-    && apt-get upgrade -y \
-    && apt-get install -y --allow-downgrades --allow-remove-essential \
-        --allow-change-held-packages \
-        php7.4-cli \
-        php7.4-common \
-        php7.4-curl \
-        php7.4-intl \
-        php7.4-json \
-        php7.4-xml \
-        php7.4-mbstring \
-        php7.4-mysql \
-        php7.4-pgsql \
-        php7.4-sqlite \
-        php7.4-sqlite3 \
-        php7.4-zip \
-        php7.4-bcmath \
-        php7.4-memcached \
-        php7.4-gd \
-        php7.4-dev \
-        pkg-config \
-        libcurl4-openssl-dev \
-        libedit-dev \
-        libssl-dev \
-        libxml2-dev \
-        xz-utils \
-        libsqlite3-dev \
-        rsync \
-        sqlite3 \
-        git \
-        curl \
-        vim \
-        nano \
-        tree \
-        postgresql-client \
+# Install dependencies and extensions
+RUN apt-get update && apt-get install -y \
+    zsh \
+    unzip \
+    git \
+    libfreetype6-dev \
+    libjpeg62-turbo-dev \
+    libpng-dev \
+    libzip-dev \
+    libexif-dev \
     && apt-get clean \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) gd zip exif pdo_mysql bcmath \
+    && php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
+    && php composer-setup.php --install-dir=/usr/local/bin --filename=composer \
+    && php -r "unlink('composer-setup.php');" \
+
     #####################################
     # Composer:
     #####################################
@@ -71,3 +34,6 @@ RUN set -eux \
     && curl -s http://getcomposer.org/installer | php \
     && echo "export PATH=${PATH}:/var/www/vendor/bin" >> ~/.bashrc \
     && mv composer.phar /usr/local/bin/composer
+
+# Set the working directory
+WORKDIR /var/www/html
