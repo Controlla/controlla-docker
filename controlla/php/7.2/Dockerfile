@@ -34,7 +34,7 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
 WORKDIR /var/www/html
 
 # Add Composer bin directory to PATH
-ENV PATH="/home/controlla/.composer/vendor/bin:${PATH}"
+ENV PATH="/home/controlla/.composer:${PATH}"
 
 # Switch back to the root user
 USER root
