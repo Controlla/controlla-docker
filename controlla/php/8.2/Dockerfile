@@ -22,19 +22,29 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) gd zip exif pdo_mysql bcmath
 
-# Install Composer
+# Create the directory for Composer installation and set permissions
+USER controlla
+RUN mkdir -p /home/controlla/.composer \
+    && chmod -R 777 /home/controlla/.composer
+
+# Install Composer for the 'controlla' user
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
-    && php composer-setup.php --install-dir=/usr/local/bin --filename=composer \
+    && php composer-setup.php --install-dir=/home/controlla/.composer --filename=composer \
     && php -r "unlink('composer-setup.php');"
+ENV PATH="${PATH}:/home/controlla/.composer/vendor/bin"
 
-# Add Composer binary to the PATH
-ENV PATH="${PATH}:/var/www/vendor/bin"
+# Switch back to the root user
+USER root
 
-# Install NVM
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
+# Install NVM for the 'controlla' user
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | su - controlla -c "bash"
 
-# Install Node.js version 14.17.6
-RUN /bin/bash -c "source /root/.nvm/nvm.sh && nvm install 14.17.6"
+# Install Node.js version 14.17.6 for the 'controlla' user
+USER controlla
+RUN /bin/bash -c "source /home/controlla/.nvm/nvm.sh && nvm install 14.17.6"
+
+# Switch back to the root user
+USER root
 
 # Set the working directory
 WORKDIR /var/www/html

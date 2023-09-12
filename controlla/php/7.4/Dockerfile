@@ -1,16 +1,13 @@
-#
-#--------------------------------------------------------------------------
-# Image Setup
-#--------------------------------------------------------------------------
-#
+# Use the official PHP 7.4 image as the base image
 FROM php:7.4-fpm
 
-LABEL mainteners="Ivan Sotelo <isotelo@controlla.com.mx>,Gabriel Delgado <gdelgado@controlla.com.mx>"
+# Set the maintainer label
+LABEL maintainer="Ivan Sotelo <isotelo@controlla.com.mx>, Gabriel Delgado <gdelgado@controlla.com.mx>"
 
 # Create a non-root user
 RUN useradd -ms /bin/bash controlla
 
-# Install dependencies and extensions
+# Install system dependencies and PHP extensions in one step
 RUN apt-get update && apt-get install -y \
     zsh \
     unzip \
@@ -21,19 +18,33 @@ RUN apt-get update && apt-get install -y \
     libzip-dev \
     libexif-dev \
     && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) gd zip exif pdo_mysql bcmath \
-    && php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
-    && php composer-setup.php --install-dir=/usr/local/bin --filename=composer \
-    && php -r "unlink('composer-setup.php');" \
+    && docker-php-ext-install -j$(nproc) gd zip exif pdo_mysql bcmath
 
-    #####################################
-    # Composer:
-    #####################################
-    # Install composer and add its bin to the PATH.
-    && curl -s http://getcomposer.org/installer | php \
-    && echo "export PATH=${PATH}:/var/www/vendor/bin" >> ~/.bashrc \
-    && mv composer.phar /usr/local/bin/composer
+# Create the directory for Composer installation and set permissions
+USER controlla
+RUN mkdir -p /home/controlla/.composer \
+    && chmod -R 777 /home/controlla/.composer
+
+# Install Composer for the 'controlla' user
+RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
+    && php composer-setup.php --install-dir=/home/controlla/.composer --filename=composer \
+    && php -r "unlink('composer-setup.php');"
+ENV PATH="${PATH}:/home/controlla/.composer/vendor/bin"
+
+# Switch back to the root user
+USER root
+
+# Install NVM for the 'controlla' user
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | su - controlla -c "bash"
+
+# Install Node.js version 14.17.6 for the 'controlla' user
+USER controlla
+RUN /bin/bash -c "source /home/controlla/.nvm/nvm.sh && nvm install 14.17.6"
+
+# Switch back to the root user
+USER root
 
 # Set the working directory
 WORKDIR /var/www/html
