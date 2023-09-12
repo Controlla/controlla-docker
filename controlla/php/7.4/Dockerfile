@@ -25,13 +25,18 @@ RUN apt-get update && apt-get install -y \
 # Create the directory for Composer installation and set permissions
 USER controlla
 RUN mkdir -p /home/controlla/.composer \
-    && chmod -R 777 /home/controlla/.composer
+    && chmod -R 755 /home/controlla/.composer  # Corrected permissions to 755
 
 # Install Composer for the 'controlla' user
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
     && php composer-setup.php --install-dir=/home/controlla/.composer --filename=composer \
     && php -r "unlink('composer-setup.php');"
-ENV PATH="${PATH}:/home/controlla/.composer/vendor/bin"
+
+# Set the working directory
+WORKDIR /var/www/html
+
+# Add Composer bin directory to PATH
+ENV PATH="/home/controlla/.composer/vendor/bin:${PATH}"
 
 # Switch back to the root user
 USER root
@@ -45,6 +50,3 @@ RUN /bin/bash -c "source /home/controlla/.nvm/nvm.sh && nvm install 14.17.6"
 
 # Switch back to the root user
 USER root
-
-# Set the working directory
-WORKDIR /var/www/html
