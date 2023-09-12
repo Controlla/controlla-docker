@@ -1,75 +1,53 @@
+# Use the official PHP 8.2 image as the base image
+FROM php:8.0-fpm
 
+# Set the maintainer label
+LABEL maintainer="Ivan Sotelo <isotelo@controlla.com.mx>, Gabriel Delgado <gdelgado@controlla.com.mx>"
 
-#
-#--------------------------------------------------------------------------
-# Image Setup
-#--------------------------------------------------------------------------
-#
+# Create a non-root user
+RUN useradd -ms /bin/bash controlla
 
-FROM phusion/baseimage:focal-1.0.0
-
-LABEL maintainer="Ivan Sotelo <isotelo@controlla.com.mx>"
-
-ENV DEBIAN_FRONTEND=noninteractive
-RUN locale-gen en_US.UTF-8
-
-ENV LANGUAGE=en_US.UTF-8
-ENV LC_ALL=en_US.UTF-8
-ENV LC_CTYPE=en_US.UTF-8
-ENV LANG=en_US.UTF-8
-ENV TERM xterm
-
-RUN set -eux \
-    # Add the "PHP 8" ppa
-    && apt-get install -y software-properties-common \
-    && add-apt-repository -y ppa:ondrej/php \
-    #
-    #--------------------------------------------------------------------------
-    # Software's Installation
-    #--------------------------------------------------------------------------
-    #
-    && echo 'DPkg::options { "--force-confdef"; };' >> /etc/apt/apt.conf \
-    # Install "PHP Extentions", "libraries", "Software's"
-    && apt-get update \
-    && apt-get upgrade -y \
-    && apt-get install -y --allow-downgrades --allow-remove-essential \
-        --allow-change-held-packages \
-        php8.0-cli \
-        php8.0-common \
-        php8.0-curl \
-        php8.0-intl \
-        php8.0-xml \
-        php8.0-mbstring \
-        php8.0-mysql \
-        php8.0-pgsql \
-        php8.0-sqlite \
-        php8.0-sqlite3 \
-        php8.0-zip \
-        php8.0-bcmath \
-        php8.0-memcached \
-        php8.0-gd \
-        php8.0-dev \
-        pkg-config \
-        libcurl4-openssl-dev \
-        libedit-dev \
-        libssl-dev \
-        libxml2-dev \
-        xz-utils \
-        libsqlite3-dev \
-        rsync \
-        sqlite3 \
-        git \
-        curl \
-        vim \
-        nano \
-        tree \
-        postgresql-client \
+# Install system dependencies and PHP extensions in one step
+RUN apt-get update && apt-get install -y \
+    zsh \
+    unzip \
+    git \
+    libfreetype6-dev \
+    libjpeg62-turbo-dev \
+    libpng-dev \
+    libzip-dev \
+    libexif-dev \
     && apt-get clean \
-    && update-alternatives --set php /usr/bin/php8.0 \
-    #####################################
-    # Composer:
-    #####################################
-    # Install composer and add its bin to the PATH.
-    && curl -s http://getcomposer.org/installer | php \
-    && echo "export PATH=${PATH}:/var/www/vendor/bin" >> ~/.bashrc \
-    && mv composer.phar /usr/local/bin/composer
+    && rm -rf /var/lib/apt/lists/* \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) gd zip exif pdo_mysql bcmath
+
+# Create the directory for Composer installation and set permissions
+USER controlla
+RUN mkdir -p /home/controlla/.composer \
+    && chmod -R 755 /home/controlla/.composer  # Corrected permissions to 755
+
+# Install Composer for the 'controlla' user
+RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
+    && php composer-setup.php --install-dir=/home/controlla/.composer --filename=composer \
+    && php -r "unlink('composer-setup.php');"
+
+# Set the working directory
+WORKDIR /var/www/html
+
+# Add Composer bin directory to PATH
+ENV PATH="/home/controlla/.composer:${PATH}"
+
+# Switch back to the root user
+USER root
+
+# Install NVM for the 'controlla' user
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | su - controlla -c "bash"
+
+# Install Node.js version 14.17.6 for the 'controlla' user
+USER controlla
+RUN /bin/bash -c "source /home/controlla/.nvm/nvm.sh && nvm install 14.17.6"
+
+# Switch back to the root user
+USER root
+
