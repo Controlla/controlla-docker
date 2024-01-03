@@ -44,9 +44,9 @@ USER root
 # Install NVM for the 'controlla' user
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | su - controlla -c "bash"
 
-# Install Node.js version 14.17.6 for the 'controlla' user
+# Install Node.js version 16.20.0 for the 'controlla' user
 USER controlla
-RUN /bin/bash -c "source /home/controlla/.nvm/nvm.sh && nvm install 14.17.6"
+RUN /bin/bash -c "source /home/controlla/.nvm/nvm.sh && nvm install 16.20.0"
 
 # Switch back to the root user
 USER root
