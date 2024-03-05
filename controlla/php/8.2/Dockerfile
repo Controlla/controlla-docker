@@ -1,5 +1,5 @@
 # Use the official PHP 8.2 image as the base image
-FROM php:8.0-fpm
+FROM php:8.2-fpm
 
 # Set the maintainer label
 LABEL maintainer="Ivan Sotelo <isotelo@controlla.com.mx>, Gabriel Delgado <gdelgado@controlla.com.mx>"
@@ -44,10 +44,9 @@ USER root
 # Install NVM for the 'controlla' user
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | su - controlla -c "bash"
 
-# Install Node.js version 14.17.6 for the 'controlla' user
+# Install Node.js version 16.20.0 for the 'controlla' user
 USER controlla
-RUN /bin/bash -c "source /home/controlla/.nvm/nvm.sh && nvm install 14.17.6"
+RUN /bin/bash -c "source /home/controlla/.nvm/nvm.sh && nvm install 16.20.0"
 
 # Switch back to the root user
 USER root
-

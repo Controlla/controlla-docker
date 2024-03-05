@@ -1,5 +1,5 @@
-# Use the official PHP 8.2 image as the base image
-FROM php:8.0-fpm
+# Use the official PHP 7.2 image as the base image
+FROM php:7.2-fpm
 
 # Set the maintainer label
 LABEL maintainer="Ivan Sotelo <isotelo@controlla.com.mx>, Gabriel Delgado <gdelgado@controlla.com.mx>"
@@ -18,9 +18,7 @@ RUN apt-get update && apt-get install -y \
     libzip-dev \
     libexif-dev \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) gd zip exif pdo_mysql bcmath
+    && rm -rf /var/lib/apt/lists/* 
 
 # Create the directory for Composer installation and set permissions
 USER controlla
@@ -50,4 +48,3 @@ RUN /bin/bash -c "source /home/controlla/.nvm/nvm.sh && nvm install 14.17.6"
 
 # Switch back to the root user
 USER root
-
