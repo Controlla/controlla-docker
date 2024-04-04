@@ -1,7 +1,7 @@
 FROM golang:1.21.1
 
-RUN apt-get install -y --no-install-recommends unzip=6.0 && \
-  curl https://github.com/opentofu/opentofu/releases/download/v1.6.2/tofu_1.6.2_linux_amd64.zip -O && \
+RUN apt-get update && apt-get install unzip && \
+  wget https://github.com/opentofu/opentofu/releases/download/v1.6.2/tofu_1.6.2_linux_amd64.zip && \
   unzip tofu_1.6.2_linux_amd64.zip && \
   rm tofu_1.6.2_linux_amd64.zip && \
   mv tofu /usr/local/bin/tofu && \
